@@ -501,4 +501,4 @@ Because the project currently uses relative data paths, make sure the backend is
 
 HiveLogic is a research and analysis tool.
 It does **not** provide financial advice.
-Always consult a qualified financial advisor before making investment decisions.
+Always consult a qualified financial advisor before making investment decisions
