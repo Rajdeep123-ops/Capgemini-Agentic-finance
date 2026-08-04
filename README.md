@@ -1,5 +1,10 @@
 # HiveLogic
 
+* **Author:** Ribhvan Pal
+* **Co-Authors:** Ritam Sur, Rajdeep Moulik, Ankan Paul, Protyusha Mondal
+
+---
+
 **HiveLogic** is a multi-agent financial research platform that analyzes a company, extracts evidence from SEC filings and uploaded PDFs, generates a structured research report, and lets users chat with that report through a session-based RAG chatbot.
 
 It is designed as a prototype that demonstrates:
