@@ -496,7 +496,30 @@ The graph view allows users to explore contagion paths and understand how extern
 Because the project currently uses relative data paths, make sure the backend is launched from the correct working directory or update the code to use absolute paths before production deployment.
 
 ---
+# 👨‍💻 Authors:
 
+### *Ribhvan Pal*
+*Author*
+
+---
+
+### *Ritam Sur*
+*Co-Author*
+
+---
+
+### *Rajdeep Moulik*
+*Co-Author*
+
+---
+
+### *Ankan Paul*
+*Co-Author*
+
+---
+
+### *Protyusha Mondal*
+*Co-Author*
 ## Disclaimer
 
 HiveLogic is a research and analysis tool.
