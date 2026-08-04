@@ -1,10 +1,5 @@
 # HiveLogic
 
-* **Author:** Ribhvan Pal
-* **Co-Authors:** Ritam Sur, Rajdeep Moulik, Ankan Paul, Protyusha Mondal
-
----
-
 **HiveLogic** is a multi-agent financial research platform that analyzes a company, extracts evidence from SEC filings and uploaded PDFs, generates a structured research report, and lets users chat with that report through a session-based RAG chatbot.
 
 It is designed as a prototype that demonstrates:
@@ -59,6 +54,7 @@ It is designed as a prototype that demonstrates:
 
 ### RAG Flow
 ![RAG Flow](screenshots/rag-flow.png)
+
 
 ### How the architecture works
 
@@ -258,3 +254,251 @@ HIVELOGIC/
 ├── requirements.txt
 ├── .gitignore
 └── README.md
+```
+
+### Important backend folders
+
+- `agents/` — agent nodes, orchestration, and LLM handling
+- `api/` — FastAPI routes
+- `db/` — SQLAlchemy models and database setup
+- `rag/` — FAISS ingestion and retrieval
+- `graph/` — GraphRAG relationship generation, contagion analysis, and graph visualization APIs
+- `services/` — helper services for sessions and messages
+
+### Important frontend folders
+
+- `frontend/src/pages/` — dashboard, reports, graph, chat, watchlist
+- `frontend/src/components/` — navbar and reusable UI pieces
+- `frontend/src/services/` — API client
+
+---
+
+## Database Models
+
+### Reports
+Stores the final analysis output.
+
+Fields include:
+- `id`
+- `ticker`
+- `query`
+- `final_report`
+- `financial_metrics`
+- `sentiment_label`
+- `sentiment_score`
+- `verified`
+- `citations`
+- `contagion_risks`
+- `created_at`
+
+### ChatSession
+Stores a chat session tied to a specific report.
+
+Fields include:
+- `id`
+- `report_id`
+- `ticker`
+- `title`
+- `created_at`
+
+### ChatMessage
+Stores user and assistant messages for each session.
+
+Fields include:
+- `id`
+- `session_id`
+- `role`
+- `content`
+- `created_at`
+
+### Watchlist
+
+Stores tracked tickers for monitoring.
+
+The frontend retrieves live market information using yfinance, including:
+
+- Current price
+- Daily percentage change
+- Market capitalization
+- P/E ratio
+
+---
+
+## How Report-Specific FAISS Works
+
+Each report gets its own vector store:
+
+```text
+api/data/vectorstores/{report_id}/
+```
+
+That folder contains the FAISS files for only that report.
+
+This means:
+- AAPL report data does not mix with TSLA data
+- each chat session reads only the linked report’s vector store
+- older reports remain available for their own sessions
+- new analyses stay isolated from previous ones
+
+---
+
+## Local Setup
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/RibhvanPal/HiveLogic.git
+cd HiveLogic
+```
+
+### 2. Create and activate a virtual environment
+
+```bash
+python -m venv venv
+venv\Scripts\activate
+```
+
+### 3. Install backend dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### 4. Install frontend dependencies
+
+```bash
+cd frontend
+npm install
+cd ..
+```
+
+### 5. Configure Environment Variables
+
+Create a `.env` file in the project root:
+
+```env
+GROQ_API_KEY=your_groq_api_key
+GROQ_MODEL=llama-3.3-70b-versatile
+
+NEWS_API_KEY=your_newsapi_key
+
+DATABASE_URL=your_supabase_database_url
+
+FAISS_INDEX_PATH=data/faiss_index
+GRAPH_STORE_PATH=data/graph_store.json
+
+ENV=development
+PORT=8000
+```
+
+#### Optional Providers
+
+The project also contains placeholders for Azure OpenAI, OpenAI, and Ollama integrations. These are optional and are not required when using Groq.
+
+```env
+AZURE_OPENAI_ENDPOINT=
+AZURE_OPENAI_API_KEY=
+AZURE_OPENAI_DEPLOYMENT=gpt-4o
+
+OPENAI_API_KEY=
+
+OLLAMA_MODEL=
+OLLAMA_BASE_URL=
+```
+
+### 6. Run the backend
+
+
+```bash
+cd api
+uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+```
+
+### 7. Run the frontend
+
+In a separate terminal:
+
+```bash
+cd frontend
+npm run dev
+```
+
+---
+
+## GraphRAG Visualization
+
+HiveLogic provides an interactive graph view that visualizes:
+
+- Supply chain dependencies
+- Competitor relationships
+- Revenue dependencies
+- Currency risks
+- Regulatory risks
+- Macroeconomic exposure
+
+Relationships are derived from:
+
+1. Known company relationship datasets
+2. yfinance sector and industry information
+3. Dynamically generated graph relationships
+4. Interactive React Flow visualization
+
+The graph view allows users to explore contagion paths and understand how external entities may impact a company's risk profile.
+
+---
+## Screenshots
+
+
+### 1) Dashboard / Analyze Result
+
+![Analyze Result](screenshots/analyze-result-1.png)
+![Analyze Result](screenshots/analyze-result-2.png)
+![Analyze Result](screenshots/analyze-result-3.png)
+![Analyze Result](screenshots/analyze-result-4.png)
+
+### 2) Reports Page
+
+![Reports Page](screenshots/reports-page.png)
+
+### 3) Chat Page
+
+![Chat Page](screenshots/chat-page.png)
+
+### 4) Watchlist Page
+
+![Watchlist Page](screenshots/watchlist-page.png)
+
+### 5) GraphRAG & Relationship Visualization
+
+![Graph Page](screenshots/graph-page-1.png)
+![Graph Page](screenshots/graph-page-2.png)
+
+---
+
+## Example User Flow
+
+```text
+1. User enters ticker and optional PDF
+2. Backend analyzes filing, news, metrics, sentiment, risks
+3. Final report is stored in the database
+4. FAISS index is copied to a report-specific folder
+5. User opens the report in the Reports page
+6. User creates a chat session
+7. User asks follow-up questions
+8. Backend retrieves evidence from that report’s vector store
+9. Chatbot responds with grounded evidence
+```
+
+---
+
+### Important deployment note
+
+Because the project currently uses relative data paths, make sure the backend is launched from the correct working directory or update the code to use absolute paths before production deployment.
+
+---
+
+## Disclaimer
+
+HiveLogic is a research and analysis tool.
+It does **not** provide financial advice.
+Always consult a qualified financial advisor before making investment decisions.
